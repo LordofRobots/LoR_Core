@@ -24,7 +24,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // version control and major control function settings
-String Version = "Base Version : 0.1.0";
+String Version = "Base Version : 0.1.1";
 bool MecanumDrive_Enabled = false;
 bool PWM_Control_Enabled = false;
 bool SerialControl_Enabled = true;
@@ -95,7 +95,7 @@ const int MIN_SPEED = -255;
 const int MIN_STARTING_SPEED = 140;
 const int STOP = 0;
 const int SerialControl_SPEED = 110;
-bool INVERT = false;
+bool INVERT = true;
 
 // Slew rate for ramping motor speed
 const int SLEW_RATE_MS = 20;
@@ -372,6 +372,7 @@ void Set_Motor_Output(int Output, int Motor_ChA, int Motor_ChB) {
 // Define variables to store the current motor speeds
 bool STOP_FLAG = true;
 long TIME_OUT = 0;
+float SPEED_Adjustment = 0.75;
 int Serial_Input_L = 0;
 int Serial_Input_R = 0;
 boolean SerialControl() {
@@ -389,13 +390,13 @@ boolean SerialControl() {
 
     // Check the received string and change the robot's direction accordingly
     if (request.indexOf("Forward") != -1) {
-      Serial_Input_L = -SerialControl_SPEED;
-      Serial_Input_R = SerialControl_SPEED;
-      TIME_OUT = millis() + 500;
+      Serial_Input_L = int (-SerialControl_SPEED * SPEED_Adjustment);
+      Serial_Input_R = int (SerialControl_SPEED * SPEED_Adjustment);
+      TIME_OUT = millis() + 200;
     } else if (request.indexOf("Backward") != -1) {
-      Serial_Input_L = SerialControl_SPEED;
-      Serial_Input_R = -SerialControl_SPEED;
-      TIME_OUT = millis() + 500;
+      Serial_Input_L = int (SerialControl_SPEED * SPEED_Adjustment);
+      Serial_Input_R = int (-SerialControl_SPEED * SPEED_Adjustment);
+      TIME_OUT = millis() + 200;
     } else if (request.indexOf("Left") != -1) {
       Serial_Input_L = SerialControl_SPEED;
       Serial_Input_R = SerialControl_SPEED;
